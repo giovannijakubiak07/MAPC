@@ -38,13 +38,21 @@
 //	+doing(exploration);
 //	.
 
++simStart
+	:	true
+	<-	!craft( item5 , 5 );
+	.
+
+{ include("regras.asl") }
 {include("gather.asl")}
 //{include("quadrantes.asl")}
 //{ include("charging.asl") }	
 //{ include("gathering.asl") }
 //{ include("posicaoinicial.asl") }		
-//{ include("regras.asl") }
+
 //{ include("cantomaisproximo.asl") }
+
+
 
 
 //	
