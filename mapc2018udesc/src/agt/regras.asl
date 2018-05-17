@@ -1,3 +1,7 @@
+priotodo(ACTION):- 	todo(ACT1,PRIO1) & not (todo(ACT2,PRIO2)
+					& PRIO2 > PRIO1).
+
+
 nearshop(Facility):- 	
 					lat(X0) & lon(Y0) 
 					& shop(Facility, X1,Y1) & not (shop(_, X2,Y2) 
@@ -8,7 +12,8 @@ nearworkshop(Facility):-
 					lat(X0) & lon(Y0) 
 					& workshop(Facility, X1,Y1) & not (workshop(_, X2,Y2) 
 					& math.sqrt((X1-X0)*(X1-X0)+(Y1-Y0)*(Y1-Y0)) > 
-					 math.sqrt((X2-X0)*(X2-X0)+(Y2-Y0)*(Y2-Y0))).
+					 math.sqrt((X2-X0)*(X2-X0)+(Y2-Y0)*(Y2-Y0)))
+					 .
 							  
 nearchargingstation(Facility):- 	
 					lat(X0) & lon(Y0)
@@ -25,12 +30,23 @@ mycorner(LATME, LONME, CLAT,CLON):-
 			).
 			
 finddrone(LATC, LONC, AG):- 
+			
 			dronepos(AG,CLAT,CLON)[source(_)] &
 			not  (dronepos(_,OLAT,OLON)[source(_)]  & 						
 			  math.sqrt((CLAT-LATC)*(CLAT-LATC)+(CLON-LONC)*(CLON-LONC)) >
 			  math.sqrt((OLAT-LATC)*(OLAT-LATC)+(OLON-LONC)*(OLON-LONC))
 			).
-
+			
+centerStorage(Facility):-
+				.print("verificando o storage central") &
+				centerLat(X0) & centerLon(Y0) 
+						//storage(storage0,48.8242,2.30026,10271,0,[])
+					&    storage(Facility, X1,Y1,_ ,_ , _) & 
+					not (storage(_, X2,Y2,_) & 
+						 math.sqrt((X1-X0)*(X1-X0)+(Y1-Y0)*(Y1-Y0)) > 
+					  	 math.sqrt((X2-X0)*(X2-X0)+(Y2-Y0)*(Y2-Y0))).	
+				
+				
 /*
 finddrones(LATC1, LONC1, AG1,LATC2, LONC2, AG2,
 	      LATC3, LONC3, AG3,LATC4, LONC4, AG4):- 

@@ -1,139 +1,139 @@
 mas mapc2018udesc {
 agent agentA1: agentA.asl{ 
  join: env
-focus: env.art1,env.artpolygon, env.procurarLista
+focus: env.art1,env.artpolygon
 }
 agent agentA2: agentA.asl{ 
  join: env
-focus: env.art2, env.procurarLista
+focus: env.art2
 }
 agent agentA3: agentA.asl{ 
  join: env
-focus: env.art3, env.procurarLista
+focus: env.art3
 }
 agent agentA4: agentA.asl{ 
  join: env
-focus: env.art4, env.procurarLista
+focus: env.art4
 }
 agent agentA5: agentA.asl{ 
  join: env
-focus: env.art5, env.procurarLista
+focus: env.art5
 }
 agent agentA6: agentA.asl{ 
  join: env
-focus: env.art6, env.procurarLista
+focus: env.art6
 }
 agent agentA7: agentA.asl{ 
  join: env
-focus: env.art7, env.procurarLista
+focus: env.art7
 }
 agent agentA8: agentA.asl{ 
  join: env
-focus: env.art8, env.procurarLista
+focus: env.art8
 }
 agent agentA9: agentA.asl{ 
  join: env
-focus: env.art9, env.procurarLista
+focus: env.art9
 }
 agent agentA10: agentA.asl{ 
  join: env
-focus: env.art10, env.procurarLista
+focus: env.art10
 }
 agent agentA11: agentA.asl{ 
  join: env
-focus: env.art11, env.procurarLista
+focus: env.art11
 }
 agent agentA12: agentA.asl{ 
  join: env
-focus: env.art12, env.procurarLista
+focus: env.art12
 }
 agent agentA13: agentA.asl{ 
  join: env
-focus: env.art13, env.procurarLista
+focus: env.art13
 }
 agent agentA14: agentA.asl{ 
  join: env
-focus: env.art14, env.procurarLista
+focus: env.art14
 }
 agent agentA15: agentA.asl{ 
  join: env
-focus: env.art15, env.procurarLista
+focus: env.art15
 }
 agent agentA16: agentA.asl{ 
  join: env
-focus: env.art16, env.procurarLista
+focus: env.art16
 }
 agent agentA17: agentA.asl{ 
  join: env
-focus: env.art17, env.procurarLista
+focus: env.art17
 }
 agent agentA18: agentA.asl{ 
  join: env
-focus: env.art18, env.procurarLista
+focus: env.art18
 }
 agent agentA19: agentA.asl{ 
  join: env
-focus: env.art19, env.procurarLista
+focus: env.art19
 }
 agent agentA20: agentA.asl{ 
  join: env
-focus: env.art20, env.procurarLista
+focus: env.art20
 }
 agent agentA21: agentA.asl{ 
  join: env
-focus: env.art21, env.procurarLista
+focus: env.art21
 }
 agent agentA22: agentA.asl{ 
  join: env
-focus: env.art22, env.procurarLista
+focus: env.art22
 }
 agent agentA23: agentA.asl{ 
  join: env
-focus: env.art23, env.procurarLista
+focus: env.art23
 }
 agent agentA24: agentA.asl{ 
  join: env
-focus: env.art24, env.procurarLista
+focus: env.art24
 }
 agent agentA25: agentA.asl{ 
  join: env
-focus: env.art25, env.procurarLista
+focus: env.art25
 }
 agent agentA26: agentA.asl{ 
  join: env
-focus: env.art26, env.procurarLista
+focus: env.art26
 }
 agent agentA27: agentA.asl{ 
  join: env
-focus: env.art27, env.procurarLista
+focus: env.art27
 }
 agent agentA28: agentA.asl{ 
  join: env
-focus: env.art28, env.procurarLista
+focus: env.art28
 }
 agent agentA29: agentA.asl{ 
  join: env
-focus: env.art29, env.procurarLista
+focus: env.art29
 }
 agent agentA30: agentA.asl{ 
  join: env
-focus: env.art30, env.procurarLista
+focus: env.art30
 }
 agent agentA31: agentA.asl{ 
  join: env
-focus: env.art31, env.procurarLista
+focus: env.art31
 }
 agent agentA32: agentA.asl{ 
  join: env
-focus: env.art32, env.procurarLista
+focus: env.art32
 }
 agent agentA33: agentA.asl{ 
  join: env
-focus: env.art33, env.procurarLista
+focus: env.art33
 }
 agent agentA34: agentA.asl{ 
  join: env
-focus: env.art34, env.procurarLista
+focus: env.art34
 }
 //time b
 agent agentB1: agentB.asl{ 
@@ -310,7 +310,6 @@ artifact art32: EISAccess("conf/eis31.json")
 artifact art33: EISAccess("conf/eis32.json")
 artifact art34: EISAccess("conf/eis33.json")
 artifact artpolygon: calculos.ARTGreyZone
-artifact procurarLista : listas.ProcuraLista
 }
 
 workspace envb {

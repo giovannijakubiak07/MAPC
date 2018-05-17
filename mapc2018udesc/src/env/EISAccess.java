@@ -1,3 +1,4 @@
+
 // CArtAgO artifact code for project mapc2018udesc
 
 import java.util.Collection;
@@ -108,6 +109,12 @@ public class EISAccess extends Artifact implements AgentListener {
 									this.lastRoundPropeties.add(
 										defineObsProperty(pe.getName(),Translator.parametersToTerms(tmp)));
 								}
+							else if (pe.getName().equals("well")) {
+								LinkedList<Parameter> tmp = pe.getClonedParameters();
+								tmp.set(4, new Identifier(tmp.get(4).toString().toLowerCase()));
+								this.lastRoundPropeties.add(
+									defineObsProperty(pe.getName(),Translator.parametersToTerms(tmp)));
+							}
 							else if (pe.getName().equals("team")) {
 								LinkedList<Parameter> tmp = pe.getClonedParameters();
 								tmp.set(0, new Identifier(tmp.get(0).toString().toLowerCase()));
@@ -154,4 +161,3 @@ public class EISAccess extends Artifact implements AgentListener {
 	
 	
 }
-
