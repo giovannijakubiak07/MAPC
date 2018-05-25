@@ -1,3 +1,6 @@
+{ include("$jacamoJar/templates/common-cartago.asl") }
+{ include("$jacamoJar/templates/common-moise.asl") }
+
 ultimoCaminhaoAvisadoResourceNode( 23 ).
 
 +resourceNode(A,B,C,D)[source(percept)]:
@@ -9,22 +12,50 @@ ultimoCaminhaoAvisadoResourceNode( 23 ).
 		.broadcast(tell,resourceNode(A,B,C,D));
 	.
 
-//+step(_): name(agentA1)
-//	<-
-//		.wait(100);
-//		for(chargingStation(_,X,Y,_)) {
-//			addPoint(X,Y);
-//		}
-//		buildPolygon;
-//		getPolygon(X);
-//		.print(X);
-//		+X;
-//	.
++!buildPoligon: true
+	<-
+		.wait(100);
+		for(chargingStation(_,X,Y,_)) {
+			addPoint(X,Y);
+		}
+		for(dump(_,X,Y)) {
+			addPoint(X,Y);
+		}
+		for(shop(_,X,Y)) {
+			addPoint(X,Y);
+		}
+		for(workshop(_,X,Y)) {
+			addPoint(X,Y);
+		}
+		for(storage(_,X,Y,_,_,_)) {
+			addPoint(X,Y);
+		}
+		buildPolygon;
+		.print("Poligono pronto !!");
+	.
+
+{ include("construcao_pocos.asl")}
+//{ include("charging.asl") }	
+//{ include("gathering.asl") }
+//{ include("posicaoinicial.asl") }		
+//{ include("regras.asl") }
+
++simStart
+	:	not started
+//	&	entity( AGENT,_,_,_,_)
+	&	AGENT == agentA10
+	&	name( AGENT )
+	
+	<-	+started;
+		!buildPoligon;
+//		!buildWell( wellType0, AGENT, 1, 9 );
+		!buildWell( wellType1, AGENT, 2, 9 );
+		//!voltarCentro;
+	.
 
 +todo(ACTION,PRIORITY): true
 	<-
-		?priotodo(ACTION);
-		-+doing(ACTION);
+		!buscarTarefa;
 	.
 
 -todo(ACTION,_):true
@@ -32,13 +63,35 @@ ultimoCaminhaoAvisadoResourceNode( 23 ).
 	-doing(ACTION);
 .
 
++!buscarTarefa
+	:	true
+	<-	
+//		for(todo(ACT,PRI)){
+//			.print("ACT: ",ACT,", PRI: ",PRI);
+//		}
+		?priotodo(ACTION2);
+//		for(doing(ACT)){
+//			.print("ACT: ",ACT);
+//		}
+		.print("Prioridade: ",ACTION2);
+		-+doing(ACTION2);
+	.
+
+
+
 { include("gathering.asl") }
 { include("posicaoinicial.asl") }	
 { include("charging.asl") }		
 { include("regras.asl") }
 //{ include("itens.asl") }
-
-+resourceNode(NOME,B,C,ITEM): name(agentA23) & ultimoCaminhaoAvisadoResourceNode( NUM ) & NUM <= 34
+/*[source(percept)]:
+			not (resourceNode(A,B,C,D)[source(SCR)] &
+			SCR\==percept) */
++resourceNode(NOME,B,C,ITEM)[source(SOURCE)]
+	:	name(agentA23)
+	&	ultimoCaminhaoAvisadoResourceNode( NUM )
+	&	NUM <= 34
+	&	SOURCE \== percept
 		<-
 //		.send(agentA24, achieve, craftSemParts(NOME));
 		.concat( "agentA", NUM, NOMEAGENT );
@@ -46,6 +99,30 @@ ultimoCaminhaoAvisadoResourceNode( 23 ).
 		-+ultimoCaminhaoAvisadoResourceNode( NUM+1 );
 		.print("NOME: ", NOME, ", NOMEAGENT: ", NOMEAGENT);
 		.
+//+resourceNodeComItem(NOME,B,C,ITEM)	:	
+//		name(agentA23)
+//	&	ultimoCaminhaoAvisadoResourceNode( NUM )
+//	&	NUM <= 34
+//	<-
+//		.send(agentA24, achieve, craftSemParts(NOME));
+//		.concat( "agentA", NUM, NOMEAGENT );
+//		
+//		.send(NOMEAGENT, achieve, craftSemParts(NOME , ITEM));
+//		-+ultimoCaminhaoAvisadoResourceNode( NUM+1 );
+//		.print( "send: ", NOME, " ", NOMEAGENT );
+//		
+//		.
+//+step(_): name(agentA23)
+//	&	ultimoCaminhaoAvisadoResourceNode( NUM )
+//	&	NUM <= 34
+//		<-
+//		for(resourceNode(NOME,B,C,ITEM)){
+//			for(item(ITEM,_,roles([]),parts([]))){
+//				+resourceNodeComItem(NOME,B,C,ITEM)
+//			}
+//		}
+//		.
+		
 
 +step( _ ): not route([]) 
 	<-	.print("continue");
@@ -67,12 +144,37 @@ ultimoCaminhaoAvisadoResourceNode( 23 ).
 		action( ACTION );
 	.
 
-+step( _ ): doing(exploration) &	explorationsteps([ACT|T])			
-	<-
-	.print( "exploration: ", ACT);
-	action(ACT);
-	-+explorationsteps(T);
++step( _ )
+	:	doing( buildWell )
+	&	stepsBuildWell( [] )
+	<-	-todo( buildWell, _ );
+		!buscarTarefa;
 	.
+
++step( _ )
+	:	doing( buildWell )
+	&	stepsBuildWell( [H|T] )
+	&	todo( buildWell, _ )
+	<-	action( H );
+		-+stepsBuildWell( T );
+		
+//		well(well8126,48.8296,2.39843,wellType1,a,65)
+//		?well(WELLNAME,_,_,WELLTYPE,a,INTG);
+//		.print( "WellName: ", WELLNAME, ", WellType: ", WELLTYPE, ", INTG: ", INTG );
+		
+//		role(car,3,5,50,150,8,12,400,800,40,80)
+//		?role(_,_,_,_,_,MINSKILL,MAXSKILL,_,_,_,_);
+//		.print( "MINSKILL: ", MINSKILL, ", MAXSKILL: ", MAXSKILL );
+	.
+	
++step( _ ): doing(exploration) &
+			explorationsteps([ACT|T])			
+	<-
+		.print( "exploration: ", ACT);
+		action( ACT );
+		-+explorationsteps(T);
+	.
+
 
 +step( _ ): doing(craft) &	stepsCraft([callBuddies( ROLES , FACILITY , PRIORITY)|T])			
 	<-
@@ -129,9 +231,12 @@ ultimoCaminhaoAvisadoResourceNode( 23 ).
 		-+acaoValida( ACT );
 	.
 
-+step( _ ): doing(recharge) & rechargesteps([ACT|T])			
++step( _ ): doing(recharge) &
+			rechargesteps([ACT|T])			
 	<-
-		.print( "recharge:", ACT);
+		?route(ROTA);
+		.print("MINHA ROTA AGORA É !!!!!",ROTA);
+		.print("estou no recharge steps");
 		action( ACT );
 		-+rechargesteps(T);
 	.
@@ -148,5 +253,7 @@ ultimoCaminhaoAvisadoResourceNode( 23 ).
 	action( noAction );
 	.
 
-{ include("$jacamoJar/templates/common-cartago.asl") }
-{ include("$jacamoJar/templates/common-moise.asl") }
+
+
+
+
