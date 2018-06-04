@@ -175,14 +175,14 @@ ultimoCaminhaoAvisadoResourceNode( 23 ).
 		-+explorationsteps(T);
 	.
 
-
-+step( _ ): doing(craft) &	stepsCraft([callBuddies( ROLES , FACILITY , PRIORITY)|T])			
-	<-
-	//action(ACT);
-	.print("craft: ", callBuddies);
-	!!callBuddies( ROLES , FACILITY , PRIORITY);
-	-+stepsCraft(T);
-	.
+//
+//+step( _ ): doing(craft) &	stepsCraft([callBuddies( ROLES , FACILITY , PRIORITY)|T])			
+//	<-
+//	//action(ACT);
+//	.print("craft: ", callBuddies);
+//	!!callBuddies( ROLES , FACILITY , PRIORITY);
+//	-+stepsCraft(T);
+//	.
 
 +step( _ ): doing(help) & stepsHelp([ACT|T])			
 	<-	.print("help: ", ACT);

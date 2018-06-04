@@ -47,16 +47,12 @@
 //		.print( "terminou craftsemPartes");
 		//procura nova tarefa.
 	.
-+!gatherParts([H|T] , LST , R ) :  true
-								<-
-								.wait(resourceNode( _ , LAT , LON , H ));
-//								.print([H|T]);
-								//concatena a acao de ir para o resource node e gather em seguida
-								.concat(LST , [ goto(LAT , LON) , gather] , NLST);
-								//chama recursivamente
-//								.print(NLST);
-								!gatherParts(T , NLST , R )
-								.
+
+//+!gatherParts([H|T] , LST , R ) :  storage(storage2,_,_,_,_,	PARTESQUEPOSSUI) &
+//								   item(_,_,roles(LISTAITENS),parts(LISTAPARTES))	   							
+//								<-
+//								
+//								.
 								
 +!gatherParts([] , LST , R): true
 							<- 
