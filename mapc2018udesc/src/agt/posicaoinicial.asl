@@ -20,7 +20,6 @@ invert(I,O):- (I=true & O=false)|(I=false & O=true).
 		.wait (lon(LON));
 		.wait (name(N));
 		.send(agentA1,tell,dronepos(N,LAT,LON));
-		.broadcast(tell,constante_folga(12));
 	.
 
 +myc(CLAT,CLON,F):true
@@ -28,7 +27,7 @@ invert(I,O):- (I=true & O=false)|(I=false & O=true).
 		!buildexplorationsteps(CLAT, CLON,lat, F, [goto(CLAT, CLON)], R);
 		.print(R);
 		+explorationsteps(R);
-		+todo(exploration,9);		
+		+todo(exploration,6);		
 	.
 
 +explorationsteps([]):true
@@ -41,6 +40,7 @@ invert(I,O):- (I=true & O=false)|(I=false & O=true).
 -doing(exploration): explorationsteps(ACTS) & lat(LAT) & lon(LON)
 	<-
 		-+explorationsteps([goto(LAT,LON)|ACTS]);
+		.print("Removi a exploracao");
 	.
 
 +dronepos(_,_,_): .count(dronepos(_,_,_),QTD) & QTD == 4

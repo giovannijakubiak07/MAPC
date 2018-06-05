@@ -2,6 +2,7 @@
 { include("$jacamoJar/templates/common-moise.asl") }
 
 ultimoCaminhaoAvisadoResourceNode( 23 ).
+caminhoesAvisadosResourceNode( [] ).
 
 +resourceNode(A,B,C,D)[source(percept)]:
 			not (resourceNode(A,B,C,D)[source(SCR)] &
@@ -42,15 +43,28 @@ ultimoCaminhaoAvisadoResourceNode( 23 ).
 
 +simStart
 	:	not started
-//	&	entity( AGENT,_,_,_,_)
-	&	AGENT == agentA10
-	&	name( AGENT )
-	
-	<-	+started;
+	&	name(agentA10)
+//	&	entity(agentA10,_,_,_,_)
+//	&	AGENT == agentA10
+	<-	
+		.print("entrou ", agentA10);
+		+started;
 		!buildPoligon;
-//		!buildWell( wellType0, AGENT, 1, 9 );
-		!buildWell( wellType1, AGENT, 2, 9 );
-		//!voltarCentro;
+		!buildWell( wellType0, agentA10, 2, 9 );
+	.
+
++simStart
+	:	name(agentA20)
+	<-	
+		.wait( centerStorage(STORAGE) );
+		+storageCentral(STORAGE);
+		.broadcast(tell, storageCentral(STORAGE) );
+		.print("Disse para tudo mundo que ", STORAGE, " e o central");
+		
+		.wait( centerWorkshop(WORKSHOP) );
+		+workshopCentral(WORKSHOP);
+		.broadcast(tell, workshopCentral(WORKSHOP) );
+		.print("Disse para tudo mundo que ", WORKSHOP, " e o central");
 	.
 
 +todo(ACTION,PRIORITY): true
@@ -84,46 +98,27 @@ ultimoCaminhaoAvisadoResourceNode( 23 ).
 { include("charging.asl") }		
 { include("regras.asl") }
 //{ include("itens.asl") }
-/*[source(percept)]:
-			not (resourceNode(A,B,C,D)[source(SCR)] &
-			SCR\==percept) */
+
+
 +resourceNode(NOME,B,C,ITEM)[source(SOURCE)]
 	:	name(agentA23)
 	&	ultimoCaminhaoAvisadoResourceNode( NUM )
 	&	NUM <= 34
 	&	SOURCE \== percept
-		<-
-//		.send(agentA24, achieve, craftSemParts(NOME));
+	<-
 		.concat( "agentA", NUM, NOMEAGENT );
 		.send(NOMEAGENT, achieve, craftSemParts(NOME , ITEM));
 		-+ultimoCaminhaoAvisadoResourceNode( NUM+1 );
 		.print("NOME: ", NOME, ", NOMEAGENT: ", NOMEAGENT);
-		.
-//+resourceNodeComItem(NOME,B,C,ITEM)	:	
-//		name(agentA23)
-//	&	ultimoCaminhaoAvisadoResourceNode( NUM )
-//	&	NUM <= 34
-//	<-
-//		.send(agentA24, achieve, craftSemParts(NOME));
-//		.concat( "agentA", NUM, NOMEAGENT );
-//		
-//		.send(NOMEAGENT, achieve, craftSemParts(NOME , ITEM));
-//		-+ultimoCaminhaoAvisadoResourceNode( NUM+1 );
-//		.print( "send: ", NOME, " ", NOMEAGENT );
-//		
-//		.
-//+step(_): name(agentA23)
-//	&	ultimoCaminhaoAvisadoResourceNode( NUM )
-//	&	NUM <= 34
-//		<-
-//		for(resourceNode(NOME,B,C,ITEM)){
-//			for(item(ITEM,_,roles([]),parts([]))){
-//				+resourceNodeComItem(NOME,B,C,ITEM)
-//			}
-//		}
-//		.
-		
+	.
 
++step( X )
+	:	X = 3
+	&	name (agentA22)
+	<-
+		//item(item5,5,roles([drone,car]),parts([item4,item1]))
+		!craftComParts(item5, car, drone);
+	.
 +step( _ ): not route([]) 
 	<-	.print("continue");
 		action( continue );
@@ -175,44 +170,21 @@ ultimoCaminhaoAvisadoResourceNode( 23 ).
 		-+explorationsteps(T);
 	.
 
-//
-//+step( _ ): doing(craft) &	stepsCraft([callBuddies( ROLES , FACILITY , PRIORITY)|T])			
-//	<-
-//	//action(ACT);
-//	.print("craft: ", callBuddies);
-//	!!callBuddies( ROLES , FACILITY , PRIORITY);
-//	-+stepsCraft(T);
-//	.
-
 +step( _ ): doing(help) & stepsHelp([ACT|T])			
 	<-	.print("help: ", ACT);
 		action( ACT );
 		-+stepsHelp(T);
 	.
 
-//+step( _ ): doing(craftSemParts) & 
-//			stepsCraftSemParts([store(ITEM,QUANTIDADE)|T])
-//			& hasItem( ITEM, NOVAQUANTIDADE)
-//			& lat(LATAG) & lon(LONAG) & currentStorage(STORAGE) &
-//			//storage(storage2,48.86243,2.30345,9401,0,[])
-//			storage(STORAGE , LATSTR , LONSTR , _ , _ )
-//	<-
-//		
-//		.
-
 +step( _ ): doing(craftSemParts) & 
 			stepsCraftSemParts([store(ITEM,QUANTIDADE)|T])
-			& hasItem( ITEM, NOVAQUANTIDADE)
-			
+			& hasItem( ITEM, NOVAQUANTIDADE)	
 	<-	
-		
 		.print( "quantidade: ", NOVAQUANTIDADE, " ITEM: ", ITEM );
 		action( store(ITEM,NOVAQUANTIDADE) );
 		-+stepsCraftSemParts(T);
 		-+acaoValida( store(ITEM,NOVAQUANTIDADE) );
 	.
-
-
 
 +step( _ ): doing(craftSemParts) &
 			stepsCraftSemParts([ACT|T])			
@@ -222,12 +194,59 @@ ultimoCaminhaoAvisadoResourceNode( 23 ).
 		-+stepsCraftSemParts(T);
 		-+acaoValida( ACT );
 	.
-	
-+step( _ ): doing(craft) & stepsCraft([ACT|T])			
+
++step( _ ):
+		doing(craftComParts) 
+		& stepsCraftComParts([store(ITEM,QUANTIDADE)|T])
+		& hasItem( ITEM, NOVAQUANTIDADE)
+	<-	
+		.print( "quantidade: ", NOVAQUANTIDADE, ", ITEM: ", ITEM );
+		action( store(ITEM,NOVAQUANTIDADE) );
+		-+stepsCraftComParts(T);
+		-+acaoValida( store(ITEM,NOVAQUANTIDADE) );
+	.
+
++step( _ ):
+		doing(craftComParts)
+		& stepsCraftComParts([callBuddies( ROLES , FACILITY , PRIORITY)|T])
 	<-
-		.print( "craft:", ACT);
+		//action(ACT);
+		.print("craftComParts: ", callBuddies);
+		!!callBuddies( ROLES , FACILITY , PRIORITY);
+		-+stepsCraftComParts(T);
+	.
+
++step( _ ):
+		doing(craftComParts)
+		& stepsCraftComParts([retrieve( ITEM, 1)|T])
+		& storageCentral(STORAGE)
+		& storagePossueItem( STORAGE, ITEM )
+	<-
+		?storage( STORAGE, _, _, _, _, LISTAITENS);
+		.print( "Peguei: ", ITEM, ", Storage: ", STORAGE, ", LISTAITENS: ", LISTAITENS );
+		action( retrive( ITEM, 1 ) );
+		.print("craftComParts: retrieve( ", ITEM, ", 1 )");
+		-+stepsCraftComParts(T);
+	.
+
++step( _ ):
+		doing(craftComParts)
+		& stepsCraftComParts([retrieve( ITEM, 1)|T])
+	<-
+		?storageCentral(STORAGE);
+		?storage( STORAGE, _, _, _, _, LISTAITENS);
+		.print( "Esperando: Storage: ", STORAGE, ", LISTAITENS: ", LISTAITENS );
+	.
+
++step( _ ): 
+		doing(craftComParts)
+		& stepsCraftComParts([ACT|T])
+	<-
+		?storage( STORAGE, _, _, _, _, LISTAITENS);
+		.print( "Storage: ", STORAGE, ", LISTAITENS: ", LISTAITENS );
+		.print( "craftComParts: ", ACT);
 		action( ACT );
-		-+stepsCraft(T);
+		-+stepsCraftComParts(T);
 		-+acaoValida( ACT );
 	.
 
@@ -235,7 +254,7 @@ ultimoCaminhaoAvisadoResourceNode( 23 ).
 			rechargesteps([ACT|T])			
 	<-
 		?route(ROTA);
-		.print("MINHA ROTA AGORA É !!!!!",ROTA);
+		.print("MINHA ROTA AGORA É ", ROTA, " !!!!!");
 		.print("estou no recharge steps");
 		action( ACT );
 		-+rechargesteps(T);
@@ -252,8 +271,3 @@ ultimoCaminhaoAvisadoResourceNode( 23 ).
 	.print("noAction");
 	action( noAction );
 	.
-
-
-
-
-

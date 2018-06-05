@@ -1,13 +1,11 @@
-+help(AGENT, H , F , PRIO): role(H,_,_,_,_,_,_,_,_,_,_)
-				<-
-				+stepsHelp( [goto(F) ]);
-				+todo( help, PRIO);
-				+quemPrecisaAjuda( AGENT );
-				.
+//+help(AGENT, H , F , PRIO): role(H,_,_,_,_,_,_,_,_,_,_)
+//				<-
+//				+stepsHelp( [goto(F) ]);
+//				+todo( help, PRIO);
+//				+quemPrecisaAjuda( AGENT );
+//				.
 
-+!craftSemParts(NOME , ITEM)
-	:	role(_,_,_,LOAD,_,_,_,_,_,_,_)
-	&	item(ITEM,TAM,_,_)
++!craftSemParts(NOME , ITEM)	:	role(_,_,_,LOAD,_,_,_,_,_,_,_)	&	item(ITEM,TAM,_,_)
 	<-	
 		.wait(resourceNode(NOME,LATRESOUR,LONRESOUR,ITEM));
 		LIST = [goto(LATRESOUR, LONRESOUR)];
@@ -15,23 +13,77 @@
 		!repeat( [gather], QTD, [], R );
 		.concat(LIST, R, NLIST);
 		.wait(centerStorage(FS));
-//		.wait(nearstorage(FS, LATRESOUR, LONRESOUR));
 		+currentStorage(FS);
-						//concatena a acao de ir para o storage central 
-						.concat(NLIST, [goto(FS)] , NNLIST);
-//						.print("printando nova nova nova nova lista" , NNLIST);
-						.concat(NNLIST, [store(ITEM,_)] , NNNLIST);
-//						.print("3nlist " , NNNLIST);
-						//.concat(NNNLIST, [retrieve(ITEM,1)], NNNNLIST);
-						//adiciona a lista com todos os steps na crença
-						-+stepsCraftSemParts(NNNLIST);
-						+todo(craftSemParts,8);
-					.
+		.concat(NLIST, [goto(FS)] , NNLIST);
+		.concat(NNLIST, [store(ITEM,_)] , NNNLIST);
+		-+stepsCraftSemParts(NNNLIST);
+		+todo(craftSemParts,8);
+	.
 
-//+!craftComParts : storage(storage2,_,_,_,_,LISTADEITENS)
-//				<-	
-//				
-//				.
++!craftComParts(ITEM, ROLE, OTHERROLE)
+	:	
+		role(ROLE,_,_,LOAD,_,_,_,_,_,_,_)
+	&	item( ITEM, TAM, roles(LROLES), parts(LPARTS) )
+	&	storageCentral(STORAGE)
+	&	workshopCentral(WORKSHOP)
+	<-	
+		.print("Entrou no craft");
+		PASSOS_1 = [callBuddies( ROLE, STORAGE, 7), goto(STORAGE)];
+		!passosPegarItens(PASSOS_1, LPARTS, PASSOS_2);
+		.concat( PASSOS_2, [goto(WORKSHOP), assemble, goto(STORAGE),store(ITEM,_)], PASSOS_3 );
+		.print( PASSOS_3 );
+		-+stepsCraftComParts( PASSOS_3 );
+		+todo(craftComParts,8);	
+		.print("Saiu no craft");
+	.
+
++!passosPegarItens(LIST, [], LISTARETRIEVE)
+	:	true
+	<-	
+		LISTARETRIEVE = LIST;
+	.
+
++!passosPegarItens(LIST, [H|T], LISTARETRIEVE)
+	:	true
+	<-	
+		.concat(LIST, [retrieve( H, 1)], NLIST);
+		!passosPegarItens(NLIST,T,LISTARETRIEVE);
+	.
+
++stepHelp( [] ): 	quemPrecisaAjuda(QUEM)
+	<- 	//-todo(help, _); 
+		-stepsHelp([]);
+		.send(QUEM, tell, cheguei);
+		-quemPrecisaAjuda(QUEM);
+	.
+
++stepsCraftSemParts( [] ): 	true
+	<- 	
+		-stepsCraftSemParts([]);
+		-todo(craftSemParts, _);
+		.print( "terminou craftsemPartes");
+		//procura nova tarefa.
+	.
+
++stepsCraftComParts( [] ): 	true
+	<- 	
+		-stepsCraftSemParts([]);
+		-todo(craftSemParts, _);
+		.print( "terminou craftComPartes");
+		//procura nova tarefa.
+	.
+
+
++!passosPegarItens(LIST, [], LISTARETRIEVE)	:	true
+	<-	
+		LISTARETRIEVE = LIST;
+	.
+
++!passosPegarItens(LIST, [H|T], LISTARETRIEVE)	:	true
+	<-	
+		.concat(LIST, [retrieve( H, 1)], NLIST);
+		!passosPegarItens(LIST,T,NLIST);
+	.
 
 +stepHelp( [] ): 	quemPrecisaAjuda(QUEM)
 	<- 	//-todo(help, _); 
@@ -47,12 +99,16 @@
 //		.print( "terminou craftsemPartes");
 		//procura nova tarefa.
 	.
-
-//+!gatherParts([H|T] , LST , R ) :  storage(storage2,_,_,_,_,	PARTESQUEPOSSUI) &
-//								   item(_,_,roles(LISTAITENS),parts(LISTAPARTES))	   							
-//								<-
-//								
-//								.
++!gatherParts([H|T] , LST , R ) :  true
+								<-
+								.wait(resourceNode( _ , LAT , LON , H ));
+//								.print([H|T]);
+								//concatena a acao de ir para o resource node e gather em seguida
+								.concat(LST , [ goto(LAT , LON) , gather] , NLST);
+								//chama recursivamente
+//								.print(NLST);
+								!gatherParts(T , NLST , R )
+								.
 								
 +!gatherParts([] , LST , R): true
 							<- 
@@ -89,8 +145,7 @@
 //	<-
 //		-+explorationsteps([goto(LAT,LON)|ACTS]);
 //	.
--doing(craftSemParts)
-	:	stepsCraftSemParts(L)
+-doing(craftSemParts)	:	stepsCraftSemParts(L)
 	&	lat(LAT)
 	&	lon(LON)
 	& 	currentStorage(STORAGE)
@@ -113,4 +168,31 @@
 			action(H);
 			-+stepsCraft(T);
 			.								
+
+//+!craftComParts(ITEM): item( ITEM, TAM, roles(LROLES), parts(LPARTS) )
+//					 &	storageCentral(STORAGE)
+//								  <-	
+//		.print("Entrou no craftComParts");
+//		.broadcast(tell ,tellLocation(ROLE));
+//		.wait(nearRoleToStore(Facility , ROLE , NAME));
+//		.print("O ", ROLE, " MAIS PRÓXIMO É O: ", NAME);
+//		!craftComParts
+//	.
+//+!tellLocation(ROLE)[source(SOURCE)]: entity(NAME,_,LAT,LON,ROLE)
+//												<-
+//		.print("contando localizacao");						
+//		.send(SOURCE , tell , localizacaoAgProximo(ROLE, NAME , LAT , LON));
+//	.
+//
+
+//+!verificaItensPossiveis( ITEM ,[] , [] , NADA ): storageCentral(STORAGE) &
+//							 storage(STORAGE,_,_,_,_,ITEMQUEPOSSUIMOS)
+//							 & item(ITEM,_,_,parts([ITENSPARAOITEM|TAIL]))
+//							 & not jaVerificado(ITEM , POSSIVEL)
+//						<-
+//						POSSIVEL = .member(ITENSPARAOITEM ,ITEMQUEPOSSUIMOS)
+//					
+//					
+//.
+
 	

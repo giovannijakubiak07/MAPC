@@ -52,7 +52,20 @@
 	action(noAction);
 	-+doing(nothing);
 	?hasItem(ITEM,QUANT);
-//	.print("Item ",ITEM," QUANT ",QUANT)
+	.print("Item ",ITEM," QUANT ",QUANT)
 	.broadcast(tell,hasItem(ITEM,QUANT));
 .
 
+
++step( _ ): not route([])
+<-
+	action( continue );
+	?name(NOME);
+	?step(PASSO);
+	?charge(CARGA);
+	?routeLength(TAMANHOROTA);
+	?role(PAPEL,_,_,_,_,_,_,_,_,_,_);
+	.print("EU SOU O AGENTE ",NOME," SOU UM ",PAPEL," NO PASSO ",PASSO," A MINHA CARGA É ",
+		CARGA," E O TAMANHO DA MINHA ROTA É ",TAMANHOROTA
+	);
+.

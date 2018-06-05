@@ -1,6 +1,6 @@
-
-+charge(BAT): not todo(recharge,10)
++charge(BAT):role(_,_,_,CAP,_,_,_,_,_,_,_) & BAT<((CAP/3)*2) & not todo(recharge,10)
 	<-
+		.print("calculando recarga");
 		!calcular(STEPS);
 	.
 
@@ -11,6 +11,7 @@
 		?lon(LONATUAL);
 		?calculatenearchargingstation(Facility,X1,Y1);
 		!calculatehowmanystepsrecharge(Facility);
+		-+nearchargingstation(Facility);
 		!calculatedistance( LATATUAL, LONATUAL, X1, Y1, DISTANCIA );
 		!calculatesteps(DISTANCIA,STEPS);
 		.print(" STEPS CALCULADOS ",STEPS, " BAT ",BAT);
@@ -19,19 +20,20 @@
 
 +!calculatesteps(DISTANCIA,STEPS):true
 	<-
+		?step(STEP);
 		?role(_,VELOCIDADE,_,_,_,_,_,_,_,_,_);
-		.wait(constante_folga(CONSTANTE));
-		DISTANCIAMTS=math.round(((DISTANCIA*112.120)*1.2)+0.5);
-		ROTA= math.round(((DISTANCIAMTS/VELOCIDADE))+0.5);
-		STEPSNECESSARIOS=(ROTA/VELOCIDADE)+CONSTANTE;
-		STEPS=math.round(STEPSNECESSARIOS+0.5);	
+		.wait( constante_folga(CONSTANTE) & minha_media_rota(MEDIAVEICULO));
+		TAMANHOROTA=(DISTANCIA*VELOCIDADE)/MEDIAVEICULO;
+		STEPSNECESSARIOS=(TAMANHOROTA/VELOCIDADE)+CONSTANTE;
+		STEPS=math.round(STEPSNECESSARIOS)+1;	
 	.
 	
 +!proximoPasso(STEPS,BAT):STEPS>=BAT
 	<-
 		?timerecharge(QTD);
-		?calculatenearchargingstation(Facility,X1,Y1);
-		.concat([goto(Facility)],LS);
+		?nearchargingstation(Facility);
+		.concat([goto(Facility),charge],LS);
+		.print("Chamando o buildsteps recharge ",LS, " QTD ",QTD, " R ",R)
 		!buildstepsrecharge(LS,QTD,R);
 		-+rechargesteps(R);
 		+todo(recharge,10);
@@ -47,6 +49,7 @@
 +!buildstepsrecharge(LS,QTD,R):QTD>0
 	<-
 		.concat(LS,[charge],NLS);
+		.print("----------------->",NLS,"<------------")	
 		!buildstepsrecharge(NLS,QTD-1,R);
 	.
 
@@ -59,12 +62,17 @@
 	<-
 		-todo(recharge,_);
 		-rechargesteps([]);
+	    .print("removi o todo recharge <-- ");
+	    for(todo(ACT,PRI)){
+			.print(">< ",ACT," >< ",PRI);
+		}	
 	.
 +!calculatehowmanystepsrecharge(Facility):true
 	<-
 		?chargingStation(Facility,_,_,CAP);
 		?role(_,_,_,BAT,_,_,_,_,_,_,_);
-		TEMPO = math.round((BAT/CAP)+0.5);
+		TEMPO = math.round(BAT/CAP);
+		.print("CAPACIDADE RECARGA ",CAP," BATERIA ",BAT," TEMPO NECESSARIO ",TEMPO);		
 		-+timerecharge(TEMPO);
 	.
 
@@ -72,4 +80,5 @@
 	<-
 		.print("Acabou minha bateria.")
 	.	
+{ include("criteriosrecarga.asl") }
 { include("regras.asl") }
