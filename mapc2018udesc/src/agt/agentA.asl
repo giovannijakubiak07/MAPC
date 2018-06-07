@@ -117,6 +117,7 @@ caminhoesAvisadosResourceNode( [] ).
 	&	name (agentA22)
 	<-
 		//item(item5,5,roles([drone,car]),parts([item4,item1]))
+		
 		!craftComParts(item5, car, drone);
 	.
 +step( _ ): not route([]) 

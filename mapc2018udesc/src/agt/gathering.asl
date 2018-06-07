@@ -183,16 +183,16 @@
 //		.print("contando localizacao");						
 //		.send(SOURCE , tell , localizacaoAgProximo(ROLE, NAME , LAT , LON));
 //	.
-//
 
-//+!verificaItensPossiveis( ITEM ,[] , [] , NADA ): storageCentral(STORAGE) &
+
+//+!verificaItensPossiveis( ITEM , NADA , LIST ): storageCentral(STORAGE) &
 //							 storage(STORAGE,_,_,_,_,ITEMQUEPOSSUIMOS)
-//							 & item(ITEM,_,_,parts([ITENSPARAOITEM|TAIL]))
-//							 & not jaVerificado(ITEM , POSSIVEL)
+//							 & item(ITEM,_,_,parts([ITEMPARAOITEM|TAIL]))
+//							& not verificado(ITEM , LISTADEITENSVERIFICADOS)&
+//							POSSIVEL = .member(ITENSPARAOITEM ,ITEMQUEPOSSUIMOS)
 //						<-
-//						POSSIVEL = .member(ITENSPARAOITEM ,ITEMQUEPOSSUIMOS)
-//					
-//					
+//						.concat(LISTADEITENSVERIFICADOS , ITENSPARAOITEM , NOVALISTA);
+//						verificado(ITEM , NOVALISTA)
+//						.print("Verificado");
+//						!verificaItensPossiveis( ITEM , POSSIVEL);
 //.
-
-	
