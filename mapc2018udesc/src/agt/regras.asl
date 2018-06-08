@@ -19,6 +19,16 @@ nearstorage(Facility, X0, Y0):-
 					storage(Facility, X1,Y1,_,_,_) & not (storage(_, X2,Y2,_,_,_)
 					& math.sqrt((X1-X0)*(X1-X0)+(Y1-Y0)*(Y1-Y0)) > 
 					 math.sqrt((X2-X0)*(X2-X0)+(Y2-Y0)*(Y2-Y0))).
+
+centerWorkshop(WORKSHOP)
+	:-
+		storageCentral(STORAGE)
+	&	storage(STORAGE,X0,Y0,_,_,_)
+	&	workshop(WORKSHOP, X1,Y1)
+	&	not (workshop(_,X2,Y2) & 
+			math.sqrt((X1-X0)*(X1-X0)+(Y1-Y0)*(Y1-Y0)) > 
+			math.sqrt((X2-X0)*(X2-X0)+(Y2-Y0)*(Y2-Y0)))
+	.
 					 							  
 calculatenearchargingstation(Facility,X1,Y1):- 	
 					lat(X0) & lon(Y0)
@@ -58,30 +68,29 @@ centerStorage(Facility)
 		storage(Facility, X1,Y1,_ ,_ , _) & 
 		not ( storage(_, X2,Y2,_ ,_ , _) & 
 			math.sqrt((X1-X0)*(X1-X0)+(Y1-Y0)*(Y1-Y0)) > 
-			math.sqrt((X2-X0)*(X2-X0)+(Y2-Y0)*(Y2-Y0))). 
-			
-centerWorkshop(WORKSHOP)
-						:-	storageCentral(STORAGE)&
-							storage(STORAGE,X0,Y0,_,_,_)&
-							
-							workshop(WORKSHOP, X1,Y1) & 
-							not (workshop(_,X2,Y2) & 
-								math.sqrt((X1-X0)*(X1-X0)+(Y1-Y0)*(Y1-Y0)) > 
-								math.sqrt((X2-X0)*(X2-X0)+(Y2-Y0)*(Y2-Y0)))
-								.
+			math.sqrt((X2-X0)*(X2-X0)+(Y2-Y0)*(Y2-Y0))).
 
-nearRoleToStore(Facility , ROLE , NAME):-
-					storage(Facility, X0,Y0,_ ,_ , _)
-					 
-					& localizacaoAgProximo(ROLE, NAME , X1 , Y1)	 & not (localizacaoAgProximo(ROLE, NAME , X2 , Y2) 
-					& math.sqrt((X1-X0)*(X1-X0)+(Y1-Y0)*(Y1-Y0)) > 
-					 math.sqrt((X2-X0)*(X2-X0)+(Y2-Y0)*(Y2-Y0))).
-						
 storagePossueItem( STORAGE, ITEM )
 	:-
 		storage( STORAGE, _, _, _, _, LISTAITENS)
 	&	.member( item(ITEM,_,_), LISTAITENS )
 	.
 
-			
-			
+calculatedistance( XA, YA, XB, YB, DISTANCIA )
+					:- DISTANCIA =  math.sqrt((XA-XB)*(XA-XB)+(YA-YB)*(YA-YB)).
+
+distanciasemsteps(DISTANCIA, NSTEPS ):-
+					role(_,VELOCIDADE,_,_,_,_,_,_,_,_,_) &
+					NSTEPS=math.ceil((DISTANCIA*111.12)/VELOCIDADE). 
+
+
+calculatehowmanystepsrecharge(Facility,TEMPO):-
+						role(_,_,_,BAT,_,_,_,_,_,_,_)&
+						chargingStation(Facility,_,_,CAP)&
+						TEMPO = math.ceil(BAT/CAP)
+						.
+						
+coeficienterecarga(COEFICIENTE):-
+				(role(drone,_,_,_,_,_,_,_,_,_,_)& COEFICIENTE=15)
+				 |(not role(drone,_,_,_,_,_,_,_,_,_,_)& COEFICIENTE=15)
+				.	

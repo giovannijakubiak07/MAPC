@@ -1,23 +1,23 @@
 
-+!buildWell( WELLTYPE, AGENT, td, PRIORITY )
++!buildWell( WELLTYPE, AGENT, 1, PRIORITY )
 	:	maxLat( MLAT )
 	&	maxLon( MLON )
 	<-	!buildWell( WELLTYPE, AGENT, MLAT, MLON, PRIORITY );
 	.
 	
-+!buildWell( WELLTYPE, AGENT, te, PRIORITY )
++!buildWell( WELLTYPE, AGENT, 2, PRIORITY )
 	:	maxLat( MLAT )
 	&	minLon( MLON )
 	<-	!buildWell( WELLTYPE, AGENT, MLAT, MLON, PRIORITY );
 	.
 
-+!buildWell( WELLTYPE, AGENT, bd, PRIORITY )
++!buildWell( WELLTYPE, AGENT, 3, PRIORITY )
 	:	minLat( MLAT )
 	&	minLon( MLON )
 	<-	!buildWell( WELLTYPE, AGENT, MLAT, MLON, PRIORITY );
 	.
 
-+!buildWell( WELLTYPE, AGENT, be, PRIORITY )
++!buildWell( WELLTYPE, AGENT, 4, PRIORITY )
 	:	minLat( MLAT )
 	&	maxLon( MLON )
 	<-	!buildWell( WELLTYPE, AGENT, MLAT, MLON, PRIORITY );
@@ -25,14 +25,15 @@
 
 +!buildWell( WELLTYPE, AGENT, LAT, LON, PRIORITY )
 	:	true
-	<-	getPoint( LAT, LON, P );
+	<-	.print( WELLTYPE, " ", AGENT, " ",LAT, " ", LON, " ", PRIORITY );
+		//getPoint( double lat, double lon, OpFeedbackParam<Literal> retorno ) 
+		getPoint( LAT, LON, P );
 		.print( P );
 		!getCoordenadasPonto( P, PLAT, PLON );
 		!qtdStep( WELLTYPE, AGENT, QTD );
 		!buildWellSteps( [goto(PLAT, PLON), build(WELLTYPE)], QTD, R );
-		+stepsBuildWell( R );
+		+steps( buildWell, R );
 		+todo(buildWell, PRIORITY);
-		//+todo(buildWell, PRIORITY, R );
 		.print( "buildWell pronto!!" );
 	.
 
@@ -45,7 +46,7 @@
 +!qtdStep( WELLTYPE, AGENT, QTD )
 	:	wellType(WELLTYPE,_,_,MIN,MAX)
 	&	role(_,_,_,_,_,MINSKILL,MAXSKILL,_,_,_,_)
-	<-	QTD = math.round( ( MAX-MIN )/MINSKILL );
+	<-	QTD = math.round( ( MAX-MIN )/MINSKILL )+1;
 		.print("WellType: ", WELLTYPE, ", MIN: ", MIN, ", MAX: ", MAX, ", QTD:", QTD, ", MINSKILL: ", MINSKILL);
 	.
 
@@ -63,7 +64,7 @@
 +!voltarCentro
 	:	centerLat( LAT )
 	&	centerLon( LON )
-	<-	+stepsVoltarCentro( [goto( LAT, LON )] );
+	<-	+steps( voltarCentro, [goto( LAT, LON )] );
 		+todo( voltarCentro, 7);
 		//+todo( voltarCentro, 8, [goto( LAT, LON )] );
 		.print( "voltarCentro" );

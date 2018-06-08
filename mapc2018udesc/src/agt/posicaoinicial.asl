@@ -26,20 +26,28 @@ invert(I,O):- (I=true & O=false)|(I=false & O=true).
 	<-
 		!buildexplorationsteps(CLAT, CLON,lat, F, [goto(CLAT, CLON)], R);
 		.print(R);
-		+explorationsteps(R);
+		+steps( exploration, R);
 		+todo(exploration,6);		
 	.
 
-+explorationsteps([]):true
+//+explorationsteps([]):true
+//	<-
+//		-todo(exploration,_);
+////		-doing(_);
+//		-steps( exploration,[]);
+//	.
+
++steps(exploration,[]):true
 	<-
 		-todo(exploration,_);
 //		-doing(_);
-		-explorationsteps([]);
+		-steps( exploration,[]);
 	.
 
--doing(exploration): explorationsteps(ACTS) & lat(LAT) & lon(LON)
+-doing(exploration): steps(exploration, ACTS) & lat(LAT) & lon(LON)
 	<-
-		-+explorationsteps([goto(LAT,LON)|ACTS]);
+		-steps(exploration, _ );
+		+steps(exploration, [goto(LAT,LON)|ACTS]);
 		.print("Removi a exploracao");
 	.
 
